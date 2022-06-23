@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="bootstrap4-pleasant.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans|Ubuntu" rel="stylesheet">
+        <title>Old Grading Scheme | IISER Pune</title>
+    </head>
+    <body>
+        <div class="container p-3">
+            <h1>Grading Issues and an Alternate Scheme</h1>
+
+            <div class="alert alert-primary" role="alert">
+                <strong>CGPA Comparison</strong><br /><br />
+                <p><span id="current-cgpa"></span> <br />
+                <span id="alt-cgpa"></span></p>
+
+            </div>
+            <form class="m-3 p-3">
+                <label for="transcript">Transcript Text</label><br>
+                <textarea id="transcript-text" class="form-control" name="transcript" style="width:75%; height:250px;" placeholder="Go to your Transcript Page on SAM, Select All (CTRL+A), Copy (CTRL+C) and Paste (CTRL+V) here."></textarea>
+            </form>
+
+            <div class="container mx-3">
+                <button class="btn btn-primary" id="btn-submit">Compute</button>
+            </div>
+
+            <hr>
+            <div class="container m-3 py-3" style="max-width: 500px">
+                <h2>Grading Scheme Comparison</h2>
+                <table class="table table-striped table-hover text-center">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <td>Grade</td>
+                            <td>Current Scheme</td>
+                            <td>Old Scheme</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A+</td>
+                            <td>10</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>A</td>
+                            <td>9</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>B+</td>
+                            <td>8</td>
+                            <td>8</td>
+                        </tr>
+                        <tr>
+                            <td>B</td>
+                            <td>7</td>
+                            <td>8</td>
+                        </tr>
+                        <tr>
+                            <td>C+</td>
+                            <td>6</td>
+                            <td>6</td>
+                        </tr>
+                        <tr>
+                            <td>C</td>
+                            <td>5</td>
+                            <td>6</td>
+                        </tr>
+                        <tr>
+                            <td>D</td>
+                            <td>4</td>
+                            <td>4</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <script>
+
+            function extract_data() {
+                let text = document.getElementById("transcript-text").value
+                let data_regex = new RegExp(/\d{1,2}\t(\w{2,3}\d{3,4})\t.+(\d)\s+([ABCD])/g)
+
+                data = []
+
+                i = 0
+                while (match = data_regex.exec(text)) {
+                    data[i] = [match[1], match[2], match[3]]
+                    i = i + 1                     
+                }
+
+                return data
+            }
+
+            function extract_cgpa() {
+                let text = document.getElementById("transcript-text").value
+                let cgpa_regex = new RegExp(/CGPA\s=\s([\w.]+)/g)
+
+                cgpa = parseFloat(cgpa_regex.exec(text)[1])
+
+                return cgpa
+            }
+            
+            function compute_alt_cgpa(data) {
+                grade_points = {
+                    'A': 10,
+                    'B': 8,
+                    'C': 6,
+                    'D': 4
+                }
+
+                total_credits = 0
+                total_weighted_grade_points = 0
+
+                console.log(data)
+                for (course of data) {
+                    course_credit = parseInt(course[1])
+                    grade = grade_points[course[2]]
+
+                    total_credits += course_credit
+                    total_weighted_grade_points += course_credit * grade
+                }
+
+                alt_cgpa = total_weighted_grade_points / total_credits
+            
+                return alt_cgpa
+            }
+
+            function revelation() {
+                data = extract_data()
+                cgpa = extract_cgpa()
+                alt_cgpa = compute_alt_cgpa(data)
+
+                document.getElementById("current-cgpa").innerHTML = "Current CGPA = " + cgpa.toFixed(1)
+                document.getElementById("alt-cgpa").innerHTML = "Alt CGPA = " + alt_cgpa.toFixed(1)
+
+                // console.log(cgpa.toFixed(1))
+                // console.log(alt_cgpa.toFixed(1))
+            }
+
+            let btn = document.getElementById("btn-submit");
+                btn.addEventListener('click', event => {
+                revelation();
+            });
+        </script>
+    </body>
+</html>
