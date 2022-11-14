@@ -9,13 +9,14 @@
     </head>
     <body>
         <div class="container p-3">
-            <h1>Grading Issues and an Alternate Scheme</h1>
+            <h1>Grading Scheme Comparisons - IISER Pune</h1>
+            <p>See how the current scheme of grading at IISER Pune compares against the previous scheme, and how it converts to the US GPA.</p>
 
             <div class="alert alert-primary" role="alert">
                 <strong>CGPA Comparison</strong><br /><br />
                 <p><span id="current-cgpa"></span> <br />
-                <span id="alt-cgpa"></span></p>
-
+                <span id="alt-cgpa"></span> <br />
+                <span id="us-gpa"></span></p>
             </div>
             <form class="m-3 p-3">
                 <label for="transcript">Transcript Text</label><br>
@@ -35,6 +36,8 @@
                             <td>Grade</td>
                             <td>Current Scheme</td>
                             <td>Old Scheme</td>
+                            <td>US Grade</td>
+                            <td>US Grade Point</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,47 +45,62 @@
                             <td>A+</td>
                             <td>10</td>
                             <td>10</td>
+                            <td>A</td>
+                            <td>4</td>
                         </tr>
                         <tr>
                             <td>A</td>
                             <td>9</td>
                             <td>10</td>
+                            <td>A</td>
+                            <td>4</td>
                         </tr>
                         <tr>
                             <td>B+</td>
                             <td>8</td>
                             <td>8</td>
+                            <td>AB</td>
+                            <td>3.5</td>
                         </tr>
                         <tr>
                             <td>B</td>
                             <td>7</td>
                             <td>8</td>
+                            <td>B</td>
+                            <td>3</td>
                         </tr>
                         <tr>
                             <td>C+</td>
                             <td>6</td>
                             <td>6</td>
+                            <td>BC</td>
+                            <td>2.5</td>
                         </tr>
                         <tr>
                             <td>C</td>
                             <td>5</td>
                             <td>6</td>
+                            <td>C</td>
+                            <td>2</td>
                         </tr>
                         <tr>
                             <td>D</td>
                             <td>4</td>
                             <td>4</td>
+                            <td>C</td>
+                            <td>2</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <p>This is a static site, and does not store any data. Source available on <a href="https://github.com/TheReconPilot/iiserp-grading">GitHub</a>.</p>
         </div>
         
         <script>
 
             function extract_data() {
                 let text = document.getElementById("transcript-text").value
-                let data_regex = new RegExp(/\d{1,2}\t(\w{2,3}\d{3,4})\t.+(\d)\s+([ABCD])/g)
+                let data_regex = new RegExp(/\d{1,2}\t(\w{2,3}\d{3,4})\t.+(\d)\s+([ABCD])\+?/g)
 
                 data = []
 
@@ -106,16 +124,20 @@
             
             function compute_alt_cgpa(data) {
                 grade_points = {
+                    'A+': 10,
                     'A': 10,
+                    'B+': 8,
                     'B': 8,
+                    'C+': 6,
                     'C': 6,
-                    'D': 4
+                    'D': 4,
+                    'F': 0
                 }
 
                 total_credits = 0
                 total_weighted_grade_points = 0
 
-                console.log(data)
+                // console.log(data)
                 for (course of data) {
                     course_credit = parseInt(course[1])
                     grade = grade_points[course[2]]
@@ -129,14 +151,43 @@
                 return alt_cgpa
             }
 
+            function compute_us_gpa(data) {
+                grade_points = {
+                    'A+': 4,
+                    'A': 4,
+                    'B+': 3.5,
+                    'B': 3,
+                    'C+': 2.5,
+                    'C': 2,
+                    'D': 2,
+                    'F': 0
+                }
+
+                total_credits = 0
+                total_weighted_grade_points = 0
+
+                // console.log(data)
+                for (course of data) {
+                    course_credit = parseInt(course[1])
+                    grade = grade_points[course[2]]
+
+                    total_credits += course_credit
+                    total_weighted_grade_points += course_credit * grade
+                }
+
+                us_gpa = total_weighted_grade_points / total_credits
+                return us_gpa
+            }
+
             function revelation() {
                 data = extract_data()
                 cgpa = extract_cgpa()
                 alt_cgpa = compute_alt_cgpa(data)
+                us_gpa = compute_us_gpa(data)
 
                 document.getElementById("current-cgpa").innerHTML = "Current CGPA = " + cgpa.toFixed(1)
                 document.getElementById("alt-cgpa").innerHTML = "Alt CGPA = " + alt_cgpa.toFixed(1)
-                
+                document.getElementById("us-gpa").innerHTML = "US GPA = " + us_gpa.toFixed(2)
             }
 
             let btn = document.getElementById("btn-submit");
