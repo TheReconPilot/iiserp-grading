@@ -24,7 +24,8 @@
             </form>
 
             <div class="container mx-3">
-                <button class="btn btn-primary" id="btn-submit">Compute</button>
+                <button class="btn btn-primary" id="btn-submit">Compute Grade in Older Scheme</button>
+                <button class="btn btn-primary" id="btn-us-gpa-submit">Compute US GPA</button>
             </div>
 
             <hr>
@@ -183,16 +184,29 @@
                 data = extract_data()
                 cgpa = extract_cgpa()
                 alt_cgpa = compute_alt_cgpa(data)
-                us_gpa = compute_us_gpa(data)
 
                 document.getElementById("current-cgpa").innerHTML = "Current CGPA = " + cgpa.toFixed(1)
                 document.getElementById("alt-cgpa").innerHTML = "Alt CGPA = " + alt_cgpa.toFixed(1)
+            }
+
+            function americanize() {
+                data = extract_data()
+                cgpa = extract_cgpa()
+
+                us_gpa = compute_us_gpa(data)
+
+                document.getElementById("current-cgpa").innerHTML = "Current CGPA = " + cgpa.toFixed(1)
                 document.getElementById("us-gpa").innerHTML = "US GPA = " + us_gpa.toFixed(2)
             }
 
             let btn = document.getElementById("btn-submit");
                 btn.addEventListener('click', event => {
                 revelation();
+            });
+
+            let usgpa_btn = document.getElementById("btn-us-gpa-submit");
+                usgpa_btn.addEventListener('click', event => {
+                americanize();
             });
         </script>
     </body>
